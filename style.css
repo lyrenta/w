@@ -154,3 +154,203 @@ main {
     transform: translateY(-6px);
     transition: transform 0.2s;
 }
+
+/* ===== Christmas Secrets ===== */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 1em;
+  z-index: 9999;
+  user-select: none;
+  pointer-events: none;
+}
+
+.santa {
+  position: fixed;
+  bottom: 20px;
+  left: -150px;
+  width: 150px;
+  z-index: 999;
+}
+
+.sleigh {
+  position: fixed;
+  top: -250px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  z-index: 1000;
+}
+
+.snowman {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  z-index: 2000;
+}
+
+/* ===== Christmas Secrets ===== */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 1em;
+  z-index: 9999;
+  user-select: none;
+  pointer-events: none;
+}
+
+.santa {
+  position: fixed;
+  bottom: 20px;
+  left: -150px;
+  width: 150px;
+  z-index: 999;
+}
+
+.sleigh {
+  position: fixed;
+  top: -250px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  z-index: 1000;
+}
+
+.snowman {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  z-index: 2000;
+}
+
+/* ===== Christmas Secrets ===== */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 1em;
+  z-index: 9999;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Santa walking smoothly */
+.santa {
+  position: fixed;
+  bottom: 20px;
+  width: 150px;
+  z-index: 999;
+  left: -200px;
+  animation: walkSanta 8s linear forwards;
+  animation-delay: 2s; /* start after 2s */
+}
+
+/* Sleigh flying across screen */
+.sleigh {
+  position: fixed;
+  top: -250px;
+  width: 250px;
+  z-index: 1000;
+  left: -300px;
+  animation: flySleigh 5s linear forwards;
+  animation-delay: 10s; /* start after 10s */
+}
+
+/* Jumpscare snowman */
+.snowman {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  z-index: 2000;
+  opacity: 0;
+  animation: snowmanAppear 5s linear forwards;
+  animation-delay: 15s; /* appear at 15s */
+}
+
+/* Santa keyframes */
+@keyframes walkSanta {
+  0% { left: -200px; }
+  100% { left: 110%; }
+}
+
+/* Sleigh keyframes */
+@keyframes flySleigh {
+  0% { top: -250px; left: -300px; }
+  50% { top: 30%; left: 50%; }
+  100% { top: -100px; left: 110%; }
+}
+
+/* Snowman jumpscare keyframes */
+@keyframes snowmanAppear {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
+
+/* ===== Snowflakes ===== */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 1em;
+  z-index: 9999;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ===== Sleigh + Santa ===== */
+.sleigh-container {
+  position: fixed;
+  top: -200px;
+  left: -300px;
+  width: 300px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  animation: flySleigh 8s linear forwards;
+  animation-delay: 2s;
+}
+
+.sleigh {
+  width: 250px;
+}
+
+.santa-in-sleigh {
+  width: 80px;
+  margin-left: -60px;
+}
+
+@keyframes flySleigh {
+  0% { top: -200px; left: -300px; transform: rotate(0deg); }
+  50% { top: 30%; left: 50%; transform: rotate(-10deg); }
+  100% { top: -100px; left: 110%; transform: rotate(0deg); }
+}
+
+/* ===== Jumpscare Snowman ===== */
+.snowman {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+  width: 200px;
+  z-index: 2000;
+  opacity: 0;
+}
+
+@keyframes snowmanCreep {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(-15deg); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(15deg); }
+  40% { transform: translate(-50%, -50%) scale(1.1) rotate(-10deg); }
+  60% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(0deg); }
+}
