@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Farmer Marketplace</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<div class="sticktextattop">
+    <h1>Farmer Marketplace – Admin</h1>
+    <p>Upload and manage your products</p>
+</div>
+
+<div class="container">
+
+    <div class="centerleftformapplicationmakingownproduct">
+        <h2>Product Form</h2>
+
+        <input id="name" placeholder="Product name">
+        <input id="price" type="number" placeholder="Price">
+        <input id="image" placeholder="Image URL">
+        <textarea id="description" placeholder="Product description"></textarea>
+
+        <button onclick="addProduct()">Upload Product</button>
+    </div>
+
+    <div class="centerrightorders">
+        <h2>Your Products</h2>
+        <div id="products">No products yet</div>
+    </div>
+
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

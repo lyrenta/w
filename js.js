@@ -1,228 +1,143 @@
-let productsGrid = document.getElementById("products-grid");
-let cartProd = document.getElementById("cart-products");
+const productsGrid = document.getElementById("products-grid");
+const cartProd = document.getElementById("cart-products");
+
+const modal = document.getElementById("myModal");
+const orderBlock = document.getElementById("order-block");
+const orderForm = document.getElementById("order-form");
+const priceSpan = document.getElementById("price");
+const closeModal = document.getElementById("closeModal");
 
 let productsArray = [];
-let cart = [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-if (localStorage.getItem("cart")) {
-    cart = JSON.parse(localStorage.getItem("cart"));
-    drawCartProducts();
-}
-
-let xhr = new XMLHttpRequest();
-let url = "https://my-json-server.typicode.com/lyrenta/w";
-
-xhr.open("GET", url + "/products");
+/* ===== FETCH PRODUCTS ===== */
+const xhr = new XMLHttpRequest();
+xhr.open("GET", "https://database-5c78.restdb.io/rest/product");
+xhr.setRequestHeader("content-type", "application/json");
+xhr.setRequestHeader("x-apikey", "697b805c53d66e37aa1956e0");
 xhr.responseType = "json";
-xhr.onload = function () {
-    productsArray = xhr.response;
-    productsGrid.innerHTML = "";
 
-    productsArray.forEach(p => {
-        let div = document.createElement("div");
-        div.className = "product";
-
-        div.innerHTML = `
-            <h2 class="product-name">${p.name}</h2>
-            <img class="product-photo" src="${p.photo_url}">
-            <p class="product-price">Price: ${p.price}$</p>
-            <p class="product-description">${p.description}</p>
-            <a href="userProfile.html?id=${p.author_id}">Seller profile</a>
-            <button onclick="addProductToCart(${p.id})">Buy 🎁</button>
-        `;
-
-        productsGrid.appendChild(div);
-    });
+xhr.onload = () => {
+  productsArray = xhr.response;
+  drawProducts();
 };
+
 xhr.send();
 
-function addProductToCart(id) {
-    let product = productsArray.find(p => p.id === id);
-    if (!product) return;
+/* ===== DRAW PRODUCTS ===== */
+function drawProducts() {
+  productsGrid.innerHTML = "";
 
+  productsArray.forEach(p => {
+    productsGrid.innerHTML += `
+      <div class="product">
+        <h3>${p.name}</h3>
+        <img src="${p.photo_url}" width="120"><br>
+        ${p.price}$<br><br>
+        <button data-id="${p._id}">Add to cart</button>
+      </div>
+    `;
+  });
+}
+
+/* ===== ADD TO CART ===== */
+productsGrid.addEventListener("click", e => {
+  if (e.target.tagName === "BUTTON") {
+    const product = productsArray.find(p => p._id === e.target.dataset.id);
     cart.push(product);
     localStorage.setItem("cart", JSON.stringify(cart));
     drawCartProducts();
-}
+  }
+});
 
+/* ===== CART ===== */
 function drawCartProducts() {
-    if (cart.length === 0) {
-        cartProd.innerHTML = "🎄 Cart is empty";
-        return;
-    }
+  if (cart.length === 0) {
+    cartProd.innerHTML = "Cart empty";
+    return;
+  }
 
-    cartProd.innerHTML = "";
-    let sum = 0;
+  let total = 0;
+  cartProd.innerHTML = "";
 
-    cart.forEach(p => {
-        cartProd.innerHTML += `
-            <p><img src="${p.photo_url}">${p.name} — ${p.price}$</p>
-            <hr>
-        `;
-        sum += p.price;
-    });
-
+  cart.forEach((p, i) => {
     cartProd.innerHTML += `
-        <p><b>Total:</b> ${sum}$</p>
-        <button onclick="buyAll()">Buy All 🎅</button>
+      <p>${p.name} — ${p.price}$ 
+      <button onclick="removeFromCart(${i})">❌</button></p>
     `;
+    total += p.price;
+  });
+
+  cartProd.innerHTML += `
+    <hr>
+    <b>Total: ${total}$</b><br><br>
+    <button id="buyAllBtn">Buy All 🎅</button>
+  `;
 }
 
-function buyAll() {
-    cart = [];
-    localStorage.setItem("cart", "[]");
-    cartProd.innerHTML = "🎉 Ho ho ho! Purchase complete!";
+function removeFromCart(i) {
+  cart.splice(i, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  drawCartProducts();
 }
 
 function openCart() {
-    cartProd.classList.toggle("hide");
+  cartProd.classList.toggle("hide");
+  drawCartProducts();
 }
 
-/* ===== Christmas Secrets JS ===== */
-
-// 1️⃣ Falling snow
-function createSnowflake() {
-    const snowflake = document.createElement('div');
-    snowflake.classList.add('snowflake');
-    snowflake.textContent = '❄';
-    snowflake.style.left = Math.random() * window.innerWidth + 'px';
-    snowflake.style.fontSize = Math.random() * 24 + 12 + 'px';
-    document.body.appendChild(snowflake);
-    const fallDuration = Math.random() * 5000 + 5000;
-    snowflake.animate(
-        [{ transform: `translateY(0px)` }, { transform: `translateY(${window.innerHeight}px)` }],
-        { duration: fallDuration, iterations: 1, easing: 'linear' }
-    ).onfinish = () => snowflake.remove();
-}
-setInterval(createSnowflake, 200);
-
-// 2️⃣ Santa walking across bottom after 10s
-setTimeout(() => {
-    const santa = document.getElementById('santa');
-    santa.style.display = 'block';
-    santa.style.transition = 'left 12s linear';
-    santa.style.left = window.innerWidth + 'px';
-}, 10000);
-
-// 3️⃣ Sleigh Santa after 1 minute
-setTimeout(() => {
-    const sleigh = document.getElementById('sleigh');
-    sleigh.style.display = 'block';
-    sleigh.style.transition = 'top 5s linear';
-    sleigh.style.top = '50px';
-
-    // Heavy snow during sleigh
-    const snowInterval = setInterval(createSnowflake, 50);
-
-    // 4️⃣ Jumpscare snowman 5s after sleigh appears
-    setTimeout(() => {
-        clearInterval(snowInterval);
-        const snowman = document.getElementById('snowman');
-        snowman.style.display = 'block';
-
-        setTimeout(() => {
-            snowman.style.display = 'none';
-        }, 5000); // Snowman disappears after 5s
-    }, 5000);
-
-}, 60000); // 1 minute
-
-/* ===== Christmas Secrets 20s Timeline ===== */
-window.onload = function() {
-  const santa = document.getElementById('santa');
-  const sleigh = document.getElementById('sleigh');
-  const snowman = document.getElementById('snowman');
-
-  // 1️⃣ Falling snow
-  function createSnowflake() {
-    const snowflake = document.createElement('div');
-    snowflake.classList.add('snowflake');
-    snowflake.textContent = '❄';
-    snowflake.style.left = Math.random() * window.innerWidth + 'px';
-    snowflake.style.fontSize = Math.random() * 24 + 12 + 'px';
-    document.body.appendChild(snowflake);
-    const fallDuration = Math.random() * 3000 + 2000;
-    snowflake.animate(
-      [{ transform: `translateY(0px)` }, { transform: `translateY(${window.innerHeight}px)` }],
-      { duration: fallDuration, iterations: 1, easing: 'linear' }
-    ).onfinish = () => snowflake.remove();
+/* ===== OPEN MODAL ===== */
+document.addEventListener("click", e => {
+  if (e.target.id === "buyAllBtn") {
+    openOrderModal();
   }
-  const snowInterval = setInterval(createSnowflake, 200);
+});
 
-  // 2️⃣ Santa walking across bottom after 2s
-  setTimeout(() => {
-    santa.style.display = 'block';
-    santa.style.transition = 'left 5s linear';
-    santa.style.left = window.innerWidth + 'px';
-  }, 2000);
+function openOrderModal() {
+  modal.style.display = "block";
+  orderBlock.innerHTML = "";
+  let total = 0;
 
-  // 3️⃣ Sleigh Santa after 10s
-  setTimeout(() => {
-    sleigh.style.display = 'block';
-    sleigh.style.transition = 'top 5s linear';
-    sleigh.style.top = '50px';
+  cart.forEach(p => {
+    orderBlock.innerHTML += `<p>${p.name} — ${p.price}$</p>`;
+    total += p.price;
+  });
 
-    // Increase snow during sleigh
-    const heavySnow = setInterval(createSnowflake, 50);
-
-    // 4️⃣ Jumpscare snowman at 15s
-    setTimeout(() => {
-      clearInterval(heavySnow);
-      snowman.style.display = 'block';
-
-      // Remove snowman after 5s (20s)
-      setTimeout(() => {
-        snowman.style.display = 'none';
-      }, 5000);
-    }, 5000);
-
-  }, 10000);
-};
-
-/* ===== Animated Christmas snow ===== */
-function createSnowflake() {
-    const snowflake = document.createElement('div');
-    snowflake.classList.add('snowflake');
-    snowflake.textContent = '❄';
-    snowflake.style.left = Math.random() * window.innerWidth + 'px';
-    snowflake.style.fontSize = Math.random() * 24 + 12 + 'px';
-    document.body.appendChild(snowflake);
-
-    const duration = Math.random() * 3000 + 3000;
-    snowflake.animate(
-        [
-            { transform: 'translateY(0px)', opacity: 1 },
-            { transform: `translateY(${window.innerHeight}px)`, opacity: 0.8 }
-        ],
-        { duration: duration, iterations: 1, easing: 'linear' }
-    ).onfinish = () => snowflake.remove();
+  priceSpan.textContent = total;
 }
 
-// Continuous snow
-setInterval(createSnowflake, 200);
+/* ===== CLOSE MODAL ===== */
+closeModal.onclick = () => modal.style.display = "none";
 
-/* ===== Animated Snow ===== */
-function createSnowflake() {
-    const snowflake = document.createElement('div');
-    snowflake.classList.add('snowflake');
-    snowflake.textContent = '❄';
-    snowflake.style.left = Math.random() * window.innerWidth + 'px';
-    snowflake.style.fontSize = Math.random() * 24 + 12 + 'px';
-    document.body.appendChild(snowflake);
+/* ===== SEND ORDER ===== */
+orderForm.addEventListener("submit", e => {
+  e.preventDefault();
 
-    const duration = Math.random() * 3000 + 3000;
-    snowflake.animate(
-        [
-            { transform: 'translateY(0px)', opacity: 1 },
-            { transform: `translateY(${window.innerHeight}px)`, opacity: 0.8 }
-        ],
-        { duration: duration, iterations: 1, easing: 'linear' }
-    ).onfinish = () => snowflake.remove();
-}
-setInterval(createSnowflake, 200);
+  const data = new FormData(orderForm);
 
-/* ===== Jumpscare Snowman ===== */
-const snowman = document.getElementById('snowman');
-setTimeout(() => {
-    snowman.style.animation = 'snowmanCreep 5s forwards';
-}, 15000); // 15s
+  const order = {
+    name: data.get("name"),
+    address: data.get("address"),
+    phone: data.get("phone"),
+    post_number: data.get("post_number"),
+    total_price: Number(priceSpan.textContent),
+    products: cart,
+    created_at: new Date()
+  };
+
+  const send = new XMLHttpRequest();
+  send.open("POST", "https://database-5c78.restdb.io/rest/orders");
+  send.setRequestHeader("content-type", "application/json");
+  send.setRequestHeader("x-apikey", "697b805c53d66e37aa1956e0");
+
+  send.onload = () => {
+    alert("✅ Order sent!");
+    cart = [];
+    localStorage.setItem("cart", "[]");
+    drawCartProducts();
+    modal.style.display = "none";
+    orderForm.reset();
+  };
+
+  send.send(JSON.stringify(order));
+});

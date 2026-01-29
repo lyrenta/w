@@ -26,6 +26,25 @@
 </div>
 
 <img src="https://static.vecteezy.com/system/resources/thumbnails/032/999/369/small/3d-render-of-a-snowman-isolated-on-transparent-background-png.png" class="snowman" id="snowman" alt="Jumpscare Snowman">
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+
+    <div id="order-block"></div>
+
+    <form id="order-form">
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="text" name="address" placeholder="Delivery Address" required>
+      <input type="tel" name="phone" placeholder="Phone Number" required>
+      <input type="number" name="post_number" placeholder="Post Office Number" required>
+
+      <h2>Total Price: <span id="price"></span>$</h2>
+
+      <input type="submit" value="Order">
+    </form>
+  </div>
+</div>
+
 </body>
 <script src="js.js"></script>
 </html>
