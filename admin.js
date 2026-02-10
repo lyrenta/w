@@ -1,65 +1,75 @@
-const productsDiv = document.getElementById("products");
+const API_KEY = "697b805c53d66e37aa1956e0"; // Your API key
+const PRODUCT_URL = "https://database-5c78.restdb.io/rest/product";
+const ORDERS_URL = "https://database-5c78.restdb.io/rest/orders"; // Change if your collection name is different
 
-let products = JSON.parse(localStorage.getItem("farmerProducts")) || [];
-drawProducts();
+// Add new product
+document.getElementById("productForm").addEventListener("submit", function(e){
+    e.preventDefault();
 
-function addProduct() {
     const name = document.getElementById("name").value;
-    const price = document.getElementById("price").value;
-    const image = document.getElementById("image").value;
     const description = document.getElementById("description").value;
+    const price = parseFloat(document.getElementById("price").value);
+    const image = document.getElementById("image").value;
 
-    if (!name || !price) {
-        alert("Name and price are required");
-        return;
-    }
-
-    const product = {
-        id: Date.now(),
-        name,
-        price,
-        image,
-        description
-    };
-
-    products.push(product);
-    localStorage.setItem("farmerProducts", JSON.stringify(products));
-
-    clearForm();
-    drawProducts();
-}
-
-function drawProducts() {
-    productsDiv.innerHTML = "";
-
-    if (products.length === 0) {
-        productsDiv.innerHTML = "No products yet 🌱";
-        return;
-    }
-
-    products.forEach(p => {
-        productsDiv.innerHTML += `
-            <div class="product">
-                <h3>${p.name}</h3>
-                ${p.image ? `<img src="${p.image}" width="120">` : ""}
-                <p>${p.description || ""}</p>
-                <b>${p.price}$</b>
-                <br><br>
-                <button onclick="deleteProduct(${p.id})">❌ Delete</button>
-            </div>
-        `;
+    const data = JSON.stringify({
+        name: name,
+        description: description,
+        price: price,
+        image: image
     });
-}
 
-function deleteProduct(id) {
-    products = products.filter(p => p.id !== id);
-    localStorage.setItem("farmerProducts", JSON.stringify(products));
-    drawProducts();
-}
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
 
-function clearForm() {
-    document.getElementById("name").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("image").value = "";
-    document.getElementById("description").value = "";
-}
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            if(this.status >= 200 && this.status < 300){
+                document.getElementById("productMessage").innerText = "Product added successfully!";
+                document.getElementById("productForm").reset();
+            } else {
+                document.getElementById("productMessage").innerText = "Error adding product!";
+            }
+            console.log(this.responseText);
+        }
+    });
+
+    xhr.open("POST", PRODUCT_URL);
+    xhr.setRequestHeader("content-type", "application/json");
+    xhr.setRequestHeader("x-apikey", API_KEY);
+    xhr.setRequestHeader("cache-control", "no-cache");
+
+    xhr.send(data);
+});
+
+// Load orders
+document.getElementById("loadOrders").addEventListener("click", function(){
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+
+    xhr.addEventListener("readystatechange", function(){
+        if(this.readyState === 4){
+            if(this.status >= 200 && this.status < 300){
+                const orders = JSON.parse(this.responseText);
+                const ordersList = document.getElementById("ordersList");
+                ordersList.innerHTML = "";
+                orders.forEach(order => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<strong>Order ID:</strong> ${order._id}<br>
+                                    <strong>Product:</strong> ${order.productName}<br>
+                                    <strong>Quantity:</strong> ${order.quantity}<br>
+                                    <strong>Customer:</strong> ${order.customerName}`;
+                    ordersList.appendChild(li);
+                });
+            } else {
+                alert("Failed to load orders.");
+            }
+            console.log(this.responseText);
+        }
+    });
+
+    xhr.open("GET", ORDERS_URL);
+    xhr.setRequestHeader("x-apikey", API_KEY);
+    xhr.setRequestHeader("cache-control", "no-cache");
+
+    xhr.send();
+});
