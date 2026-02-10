@@ -10,7 +10,6 @@ const closeModal = document.getElementById("closeModal");
 let productsArray = [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-/* ===== FETCH PRODUCTS ===== */
 const xhr = new XMLHttpRequest();
 xhr.open("GET", "https://database-5c78.restdb.io/rest/product");
 xhr.setRequestHeader("content-type", "application/json");
@@ -24,7 +23,6 @@ xhr.onload = () => {
 
 xhr.send();
 
-/* ===== DRAW PRODUCTS ===== */
 function drawProducts() {
   productsGrid.innerHTML = "";
 
@@ -40,7 +38,6 @@ function drawProducts() {
   });
 }
 
-/* ===== ADD TO CART ===== */
 productsGrid.addEventListener("click", e => {
   if (e.target.tagName === "BUTTON") {
     const product = productsArray.find(p => p._id === e.target.dataset.id);
@@ -50,7 +47,6 @@ productsGrid.addEventListener("click", e => {
   }
 });
 
-/* ===== CART ===== */
 function drawCartProducts() {
   if (cart.length === 0) {
     cartProd.innerHTML = "Cart empty";
@@ -86,7 +82,6 @@ function openCart() {
   drawCartProducts();
 }
 
-/* ===== OPEN MODAL ===== */
 document.addEventListener("click", e => {
   if (e.target.id === "buyAllBtn") {
     openOrderModal();
@@ -94,6 +89,11 @@ document.addEventListener("click", e => {
 });
 
 function openOrderModal() {
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
   modal.style.display = "block";
   orderBlock.innerHTML = "";
   let total = 0;
@@ -106,23 +106,30 @@ function openOrderModal() {
   priceSpan.textContent = total;
 }
 
-/* ===== CLOSE MODAL ===== */
 closeModal.onclick = () => modal.style.display = "none";
 
-/* ===== SEND ORDER ===== */
 orderForm.addEventListener("submit", e => {
   e.preventDefault();
+
+  if (cart.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
 
   const data = new FormData(orderForm);
 
   const order = {
-    name: data.get("name"),
-    address: data.get("address"),
-    phone: data.get("phone"),
-    post_number: data.get("post_number"),
+    buyer_name: data.get("name"),
+    buyer_address: data.get("address"),
+    buyer_phone: data.get("phone"),
+    buyer_post_number: data.get("post_number"),
     total_price: Number(priceSpan.textContent),
-    products: cart,
-    created_at: new Date()
+    products: cart.map(p => ({
+      id: p._id,
+      name: p.name,
+      price: p.price
+    })),
+    created_at: new Date().toISOString()
   };
 
   const send = new XMLHttpRequest();
@@ -131,12 +138,16 @@ orderForm.addEventListener("submit", e => {
   send.setRequestHeader("x-apikey", "697b805c53d66e37aa1956e0");
 
   send.onload = () => {
-    alert("✅ Order sent!");
-    cart = [];
-    localStorage.setItem("cart", "[]");
-    drawCartProducts();
-    modal.style.display = "none";
-    orderForm.reset();
+    if (send.status === 201 || send.status === 200) {
+      alert("✅ Order sent! The seller will contact you soon.");
+      cart = [];
+      localStorage.setItem("cart", "[]");
+      drawCartProducts();
+      modal.style.display = "none";
+      orderForm.reset();
+    } else {
+      alert("❌ Something went wrong, try again.");
+    }
   };
 
   send.send(JSON.stringify(order));
